@@ -6,10 +6,6 @@ import { Platform } from '@ionic/angular';
 import { FirebaseauthService } from './services/firebaseauth.service';
 import { NotificationsService } from './services/notifications.service';
 
-import { Plugins, StatusBarStyle } from '@capacitor/core';
-
-const { SplashScreen, StatusBar } = Plugins;
-
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -32,17 +28,14 @@ export class AppComponent {
     
       this.platform.ready().then(() => {
 
-        SplashScreen.hide();
-        StatusBar.setBackgroundColor({color: '#ffffff'});
-        StatusBar.setStyle({
-          style: StatusBarStyle.Light
+       
         });
 
         // this.statusBar.styleDefault();
         // this.splashScreen.hide();
         this.getUid();
-      });
-  }
+      };
+  
 
 
   getUid() {

@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/auth';
+import { AngularFireAuth } from '@angular/fire/compact/auth';
 import { FirestoreService } from './firestore.service';
 import { Cliente } from '../models';
-import { NotificationsService } from './notifications.service';
 
 @Injectable({
   providedIn: 'root'

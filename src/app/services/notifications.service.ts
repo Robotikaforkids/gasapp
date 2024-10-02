@@ -6,16 +6,11 @@ import { HttpClient} from '@angular/common/http';
 import { Router } from '@angular/router';
 
 import {
-  Plugins,
-  PushNotification,
+  PushNotifications,
   PushNotificationToken,
   PushNotificationActionPerformed,
-  LocalNotificationActionPerformed} from '@capacitor/core';
-
-
-const { PushNotifications } = Plugins;
-const { LocalNotifications } = Plugins;
-
+  PushNotification
+} from '@capacitor/push-notifications';
 
 @Injectable({
   providedIn: 'root'
@@ -41,41 +36,21 @@ export class NotificationsService {
     });
 
   }            
-
   inicializar() {
-
-     if (this.platform.is('capacitor')) {
-
-          PushNotifications.requestPermission().then( result => {
-              console.log('PushNotifications.requestPermission()');
-              if (result.granted) {
-                console.log('permisos concedidos');
-                // Register with Apple / Google to receive push via APNS/FCM
-                PushNotifications.register();
-                this.addListeners();
-              } else {
-                // Show some error
-              }
-          });
-          
-     } else {
-       console.log('PushNotifications.requestPermission() -> no es movil');
-     }
+    if (this.platform.is('capacitor')) {
+      PushNotifications.requestPermissions().then(result => {
+        if (result.receive === 'granted') {
+          PushNotifications.register();
+          this.addListeners();
+        }
+      });
+    } else {
+      console.log('No es un dispositivo móvil');
+    }
   }
-
   addListeners() {
 
-      LocalNotifications.schedule({
-        notifications: [
-          {
-            title: 'notificacion local',
-            body: 'notification.body',
-            id: 1,
-          }
-        ]
-      });
-
-      PushNotifications.addListener('registration',
+           PushNotifications.addListener('registration',
         (token: PushNotificationToken) => {
           console.log('The token is:', token);
           this.guadarToken(token.value);
@@ -93,18 +68,7 @@ export class NotificationsService {
         (notification: PushNotification) => {
           console.log('Push received en 1er plano: ', notification);
 
-              LocalNotifications.schedule({
-                notifications: [
-                  {
-                    title: 'notificacion local',
-                    body: notification.body,
-                    id: 1,
-                    extra: {
-                      data: notification.data
-                    }
-                  }
-                ]
-              });
+             
         }
       );
 
@@ -116,11 +80,7 @@ export class NotificationsService {
         }
       );
 
-      LocalNotifications.addListener('localNotificationActionPerformed', 
-      (notification: LocalNotificationActionPerformed) => {
-         console.log('Push action performed en primer plano: ', notification);
-         this.router.navigate([notification.notification.extra.data.enlace]);
-      });
+    
   }
 
   async guadarToken(token: any) {
