@@ -1,42 +1,48 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
-
+import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
-
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
-import { PagesModule } from './pages/pages.module';
-import { BackendModule } from './backend/backend.module';
-import { AngularFireModule } from '@angular/fire/compact';
-import { environment } from '../environments/environment';
-import { AngularFirestoreModule} from '@angular/fire/firestore';
-import { AngularFireStorageModule } from '@angular/fire/storage';
-import { AngularFireAuthModule } from '@angular/fire/auth';
-import { ServiceWorkerModule } from '@angular/service-worker';
-
-import { HttpClientModule } from '@angular/common/http';
-
-
+import { AngularFireAuthModule } from '@angular/fire/compat/auth';
+import { AngularFireModule } from '@angular/fire/compat';
+import { environment } from 'src/environments/environment.prod';
+import { AngularFireStorageModule } from '@angular/fire/compat/storage';
+import { HttpClient, HttpClientModule } from '@angular/common/http';  // Importa HttpClientModule
+import { ComentariosComponent } from './components/comentarios/comentarios.component';
+import { GooglemapsComponent } from './components/googlemaps/googlemaps.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { SharedModule } from './modules/shared/shared.module';
+import { SetproductosComponent } from './backend/setproductos/setproductos.component';
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [
+    AppComponent,
+   // ProductoComponent,
+    ComentariosComponent,
+    ComentariosComponent,
+    GooglemapsComponent,
+    SetproductosComponent
+  ],
   imports: [
     BrowserModule,
     IonicModule.forRoot(),
-    PagesModule,
-    BackendModule,
     AppRoutingModule,
+    AngularFirestoreModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
-    AngularFirestoreModule.enablePersistence(),
-    AngularFireStorageModule,
     AngularFireAuthModule,
-    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
-    HttpClientModule
+    AngularFireStorageModule,
+    FormsModule,
+    ReactiveFormsModule,
+    SharedModule,
+    HttpClientModule  
+
   ],
   providers: [
- 
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [
+    AppComponent
+  ],
 })
-export class AppModule {}
+export class AppModule { }

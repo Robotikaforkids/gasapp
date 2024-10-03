@@ -1,86 +1,67 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/firestore';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FirestoreService {
 
-  constructor(public database: AngularFirestore) { }
+  constructor(
+    public database: AngularFirestore
+  ) { }
 
-  createDoc(data: any, path: string, id: string) {
-      const collection = this.database.collection(path);
-      return collection.doc(id).set(data);
+  // Crear documento
+  createDoc(data: any, path: string, id: string): Promise<void> {
+    return this.database.collection(path).doc(id).set(data);
   }
 
-  getDoc<tipo>(path: string, id: string) {
-    const collection = this.database.collection<tipo>(path);
-    return collection.doc(id).valueChanges();
+  // Obtener documento por ID
+  getDoc<T>(path: string, id: string): Observable<T | undefined> {
+    return this.database.collection<T>(path).doc(id).valueChanges();
   }
 
-  deleteDoc(path: string, id: string) {
-    const collection = this.database.collection(path);
-    return collection.doc(id).delete();
+  // Eliminar documento
+  deleteDoc(path: string, id: string): Promise<void> {
+    return this.database.collection(path).doc(id).delete();
   }
 
-  updateDoc(data: any, path: string, id: string) {
-    const collection = this.database.collection(path);
-    return collection.doc(id).update(data);
+  // Actualizar documento
+  updateDoc(data: any, path: string, id: string): Promise<void> {
+    return this.database.collection(path).doc(id).update(data);
   }
 
-  getId() {
+  // Generar ID único
+  getId(): string {
     return this.database.createId();
   }
 
-  getCollection<tipo>(path: string) {
-    const collection = this.database.collection<tipo>(path);
-    return collection.valueChanges();
+  // Obtener colección completa
+  getCollection<T>(path: string): Observable<T[]> {
+    return this.database.collection<T>(path).valueChanges();
   }
 
-  getCollectionQuery<tipo>(path: string, parametro: string, condicion: any, busqueda: string) {
-    const collection = this.database.collection<tipo>(path, 
-      ref => ref.where( parametro, condicion, busqueda));
-    return collection.valueChanges();
+  // Obtener colección con una consulta
+  getCollectionQuery<T>(path: string, parametro: string, condicion: string, busqueda: any): Observable<T[]> {
+    return this.database.collection<T>(path, ref => ref.where(parametro, condicion as any, busqueda)).valueChanges();
   }
 
-  getCollectionAll<tipo>(path, parametro: string, condicion: any, busqueda: string, startAt: any) {
-    if (startAt == null) {
-      startAt = new Date();
-    }
-    const collection = this.database.collectionGroup<tipo>(path, 
-      ref => ref.where( parametro, condicion, busqueda)
-                .orderBy('fecha', 'desc')
-                .limit(1)
-                .startAfter(startAt)
-      );
-    return collection.valueChanges();
+  // Obtener colección con paginación avanzada y consulta
+  getCollectionAll<T>(collectionName: string, parametro: string, condicion: string, busqueda: any, startAt: any = new Date()): Observable<T[]> {
+    return this.database.collectionGroup<T>(collectionName, ref =>
+      ref.where(parametro, condicion as any, busqueda)
+         .orderBy('fecha', 'desc')
+         .limit(1)
+         .startAfter(startAt)
+    ).valueChanges();
   }
 
-  getCollectionPaginada<tipo>(path: string, limit: number, startAt: any) {
-    if (startAt == null) {
-      startAt = new Date();
-    }
-    const collection = this.database.collection<tipo>(path, 
-      ref => ref.orderBy('fecha', 'desc')
-                .limit(limit)
-                .startAfter(startAt)
-      );
-    return collection.valueChanges();
+  // Obtener colección paginada
+  getCollectionPaginada<T>(path: string, limit: number, startAt: any = new Date()): Observable<T[]> {
+    return this.database.collection<T>(path, ref => 
+      ref.orderBy('fecha', 'desc')
+         .limit(limit)
+         .startAfter(startAt)
+    ).valueChanges();
   }
-
-
-
-
-
-
-
 }
-
-
-
-
-
-// const itemsCollection: AngularFirestoreCollection<tipo> =
-// this.FireStore.collection<tipo>(path
-//    , ref => ref.where (parametro, '==', busqueda));
-// return itemsCollection.valueChanges();
